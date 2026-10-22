@@ -16,7 +16,7 @@ public class CourseRepository : ICourseRepository
 
     public async Task<List<Course>> GetAllAsync(string? name, int? teacherId, int? minCredits, int? maxCredits)
     {
-        var query = _context.Courses.AsNoTracking().Include(c => c.Teacher).AsQueryable();
+        var query = _context.Courses.AsNoTracking().Include(c => c.Teacher).Include(c => c.Enrollments).AsQueryable();
 
         if (!string.IsNullOrWhiteSpace(name))
             query = query.Where(c => c.Name.ToLower().Contains(name.ToLower()));
@@ -35,7 +35,7 @@ public class CourseRepository : ICourseRepository
 
     public async Task<Course?> GetByIdAsync(int id)
     {
-        return await _context.Courses.Include(c => c.Teacher).FirstOrDefaultAsync(c => c.Id == id);
+        return await _context.Courses.Include(c => c.Teacher).Include(c => c.Enrollments).FirstOrDefaultAsync(c => c.Id == id);
     }
 
     public async Task<bool> ExistsAsync(int id)

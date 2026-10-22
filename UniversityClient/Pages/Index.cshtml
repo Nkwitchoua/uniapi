@@ -1,0 +1,54 @@
+﻿@page
+@model IndexModel
+@{
+    ViewData["Title"] = "Курсы";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h1 class="h3 mb-0">Курсы</h1>
+    <div class="btn-group">
+        <a class="btn btn-sm @(Model.V == 1 ? "btn-primary" : "btn-outline-primary")" asp-page="/Index" asp-route-v="1">API v1</a>
+        <a class="btn btn-sm @(Model.V == 2 ? "btn-primary" : "btn-outline-primary")" asp-page="/Index" asp-route-v="2">API v2</a>
+    </div>
+</div>
+
+@if (Model.Error != null)
+{
+    <div class="alert alert-danger">@Model.Error</div>
+}
+else if (Model.V == 1)
+{
+    <table class="table table-hover">
+        <thead><tr><th>#</th><th>Название</th><th>Кредиты</th><th>Преподаватель</th></tr></thead>
+        <tbody>
+        @foreach (var c in Model.CoursesV1)
+        {
+            <tr>
+                <td>@c.Id</td>
+                <td><a asp-page="/Courses/Details" asp-route-id="@c.Id" asp-route-v="1">@c.Name</a></td>
+                <td>@c.Credits</td>
+                <td>@c.TeacherName</td>
+            </tr>
+        }
+        </tbody>
+    </table>
+}
+else
+{
+    <table class="table table-hover">
+        <thead><tr><th>#</th><th>Название</th><th>Кредиты</th><th>Преподаватель</th><th>Кафедра</th><th>Записано студентов</th></tr></thead>
+        <tbody>
+        @foreach (var c in Model.CoursesV2)
+        {
+            <tr>
+                <td>@c.Id</td>
+                <td><a asp-page="/Courses/Details" asp-route-id="@c.Id" asp-route-v="2">@c.Name</a></td>
+                <td>@c.Credits</td>
+                <td>@c.Teacher.FullName</td>
+                <td>@c.Teacher.Department</td>
+                <td>@c.EnrolledStudentsCount</td>
+            </tr>
+        }
+        </tbody>
+    </table>
+}

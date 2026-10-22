@@ -3,6 +3,7 @@ using UniversityApi.Common;
 using UniversityApi.DTO.Enrollments;
 using UniversityApi.Models;
 using UniversityApi.Repositories.Interfaces;
+using UniversityApi.Security;
 using UniversityApi.Services.Interfaces;
 
 namespace UniversityApi.Services.Implementations;
@@ -13,6 +14,7 @@ public class EnrollmentService : IEnrollmentService
     private readonly IStudentRepository _studentRepository;
     private readonly ICourseRepository _courseRepository;
     private readonly IMapper _mapper;
+    private readonly ICurrentUser _currentUser;
     private readonly ILogger<EnrollmentService> _logger;
 
     public EnrollmentService(
@@ -20,18 +22,27 @@ public class EnrollmentService : IEnrollmentService
         IStudentRepository studentRepository,
         ICourseRepository courseRepository,
         IMapper mapper,
+        ICurrentUser currentUser,
         ILogger<EnrollmentService> logger)
     {
         _enrollmentRepository = enrollmentRepository;
         _studentRepository = studentRepository;
         _courseRepository = courseRepository;
         _mapper = mapper;
+        _currentUser = currentUser;
         _logger = logger;
     }
 
     public async Task<ReturnResult<List<EnrollmentDto>>> GetAllAsync()
     {
-        var enrollments = await _enrollmentRepository.GetAllAsync();
+        List<Enrollment> enrollments;
+        if (_currentUser.IsAdmin)
+            enrollments = await _enrollmentRepository.GetAllAsync();
+        else if (_currentUser.IsTeacher)
+            enrollments = _currentUser.TeacherId.HasValue ? await _enrollmentRepository.GetAllAsync(teacherId: _currentUser.TeacherId) : new();
+        else
+            enrollments = _currentUser.StudentId.HasValue ? await _enrollmentRepository.GetAllAsync(studentId: _currentUser.StudentId) : new();
+
         return ReturnResult<List<EnrollmentDto>>.Success(_mapper.Map<List<EnrollmentDto>>(enrollments));
     }
 
@@ -42,6 +53,12 @@ public class EnrollmentService : IEnrollmentService
         {
             _logger.LogWarning("Enrollment with id {EnrollmentId} not found", id);
             return ReturnResult<EnrollmentDto>.Fail(StatusCodes.Status404NotFound, "ENROLLMENT_NOT_FOUND", "Enrollment not found");
+        }
+
+        if (!CanRead(enrollment))
+        {
+            _logger.LogWarning("User {UserId} denied access to enrollment {EnrollmentId}", _currentUser.UserId, id);
+            return ReturnResult<EnrollmentDto>.Fail(StatusCodes.Status403Forbidden, "FORBIDDEN", "You can view only your own enrollments");
         }
 
         return ReturnResult<EnrollmentDto>.Success(_mapper.Map<EnrollmentDto>(enrollment));
@@ -86,6 +103,12 @@ public class EnrollmentService : IEnrollmentService
             return ReturnResult<EnrollmentDto>.Fail(StatusCodes.Status404NotFound, "ENROLLMENT_NOT_FOUND", "Enrollment not found");
         }
 
+        if (!_currentUser.IsAdmin && !IsOwnCourse(enrollment))
+        {
+            _logger.LogWarning("Teacher {TeacherId} tried to change grade on course {CourseId} of another teacher", _currentUser.TeacherId, enrollment.CourseId);
+            return ReturnResult<EnrollmentDto>.Fail(StatusCodes.Status403Forbidden, "FORBIDDEN", "You can change grades only on your own courses");
+        }
+
         _mapper.Map(dto, enrollment);
         await _enrollmentRepository.UpdateAsync(enrollment);
         _logger.LogInformation("Enrollment {EnrollmentId} updated: grade set to {Grade}", id, dto.Grade);
@@ -107,4 +130,18 @@ public class EnrollmentService : IEnrollmentService
 
         return ReturnResult<EnrollmentDto>.Success(_mapper.Map<EnrollmentDto>(enrollment));
     }
+
+    private bool CanRead(Enrollment enrollment)
+    {
+        if (_currentUser.IsAdmin)
+            return true;
+
+        if (_currentUser.IsTeacher)
+            return IsOwnCourse(enrollment);
+
+        return _currentUser.StudentId.HasValue && enrollment.StudentId == _currentUser.StudentId;
+    }
+
+    private bool IsOwnCourse(Enrollment enrollment) =>
+        _currentUser.IsTeacher && _currentUser.TeacherId.HasValue && enrollment.Course.TeacherId == _currentUser.TeacherId;
 }

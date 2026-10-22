@@ -1,12 +1,15 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using UniversityApi.Common;
 using UniversityApi.DTO.Teachers;
+using UniversityApi.Security;
 using UniversityApi.Services.Interfaces;
 
 namespace UniversityApi.Controllers;
 
 [ApiController]
 [Route("api/teachers")]
+[Authorize(Policy = Policies.AdminOnly)]
 public class TeachersController : BaseApiController
 {
     private readonly ITeacherService _teacherService;
@@ -16,12 +19,14 @@ public class TeachersController : BaseApiController
         _teacherService = teacherService;
     }
 
+    [AllowAnonymous]
     [HttpGet]
     public async Task<ActionResult<ReturnResult<List<TeacherDto>>>> GetAll()
     {
         return ToResponse(await _teacherService.GetAllAsync());
     }
 
+    [AllowAnonymous]
     [HttpGet("{id:int}")]
     public async Task<ActionResult<ReturnResult<TeacherDto>>> GetById(int id)
     {

@@ -5,6 +5,8 @@ VisualStudioVersion = 17.0.31903.59
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UniversityApi", "UniversityApi\UniversityApi.csproj", "{B27251AF-683D-4A2B-9B2E-18C5512A2D3E}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UniversityClient", "UniversityClient\UniversityClient.csproj", "{AC4B5290-4482-42C2-A24B-87FC33B5C1B6}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +29,18 @@ Global
 		{B27251AF-683D-4A2B-9B2E-18C5512A2D3E}.Release|x64.Build.0 = Release|Any CPU
 		{B27251AF-683D-4A2B-9B2E-18C5512A2D3E}.Release|x86.ActiveCfg = Release|Any CPU
 		{B27251AF-683D-4A2B-9B2E-18C5512A2D3E}.Release|x86.Build.0 = Release|Any CPU
+		{AC4B5290-4482-42C2-A24B-87FC33B5C1B6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AC4B5290-4482-42C2-A24B-87FC33B5C1B6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AC4B5290-4482-42C2-A24B-87FC33B5C1B6}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{AC4B5290-4482-42C2-A24B-87FC33B5C1B6}.Debug|x64.Build.0 = Debug|Any CPU
+		{AC4B5290-4482-42C2-A24B-87FC33B5C1B6}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{AC4B5290-4482-42C2-A24B-87FC33B5C1B6}.Debug|x86.Build.0 = Debug|Any CPU
+		{AC4B5290-4482-42C2-A24B-87FC33B5C1B6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AC4B5290-4482-42C2-A24B-87FC33B5C1B6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AC4B5290-4482-42C2-A24B-87FC33B5C1B6}.Release|x64.ActiveCfg = Release|Any CPU
+		{AC4B5290-4482-42C2-A24B-87FC33B5C1B6}.Release|x64.Build.0 = Release|Any CPU
+		{AC4B5290-4482-42C2-A24B-87FC33B5C1B6}.Release|x86.ActiveCfg = Release|Any CPU
+		{AC4B5290-4482-42C2-A24B-87FC33B5C1B6}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -14,14 +14,21 @@ public class EnrollmentRepository : IEnrollmentRepository
         _context = context;
     }
 
-    public async Task<List<Enrollment>> GetAllAsync()
+    public async Task<List<Enrollment>> GetAllAsync(int? studentId = null, int? teacherId = null)
     {
-        return await _context.Enrollments
+        var query = _context.Enrollments
             .AsNoTracking()
             .Include(e => e.Student)
             .Include(e => e.Course)
-            .OrderBy(e => e.Id)
-            .ToListAsync();
+            .AsQueryable();
+
+        if (studentId.HasValue)
+            query = query.Where(e => e.StudentId == studentId);
+
+        if (teacherId.HasValue)
+            query = query.Where(e => e.Course.TeacherId == teacherId);
+
+        return await query.OrderBy(e => e.Id).ToListAsync();
     }
 
     public async Task<Enrollment?> GetByIdAsync(int id)

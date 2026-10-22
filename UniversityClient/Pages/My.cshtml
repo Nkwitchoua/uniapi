@@ -1,0 +1,45 @@
+@page
+@model MyModel
+@{
+    ViewData["Title"] = "Мои записи";
+}
+
+@if (Model.Error != null)
+{
+    <div class="alert alert-danger">@Model.Error</div>
+}
+
+@if (Model.Me != null)
+{
+    <h1 class="h3">@Model.Me.UserName</h1>
+    <p class="text-muted">
+        Роли: @string.Join(", ", Model.Me.Roles)
+        @if (Model.Me.StudentId != null) { <span>· студент #@Model.Me.StudentId</span> }
+        @if (Model.Me.TeacherId != null) { <span>· преподаватель #@Model.Me.TeacherId</span> }
+    </p>
+
+    <h2 class="h5 mt-4">Записи на курсы</h2>
+    <p class="text-muted small">Список фильтруется на сервере: студент видит только свои записи, преподаватель — записи на свои курсы.</p>
+
+    @if (Model.Enrollments.Count == 0)
+    {
+        <p>Записей нет.</p>
+    }
+    else
+    {
+        <table class="table">
+            <thead><tr><th>Студент</th><th>Курс</th><th>Дата записи</th><th>Оценка</th></tr></thead>
+            <tbody>
+            @foreach (var e in Model.Enrollments)
+            {
+                <tr>
+                    <td>@e.StudentName</td>
+                    <td>@e.CourseName</td>
+                    <td>@e.EnrollmentDate.ToLocalTime().ToString("dd.MM.yyyy")</td>
+                    <td>@(e.Grade?.ToString() ?? "—")</td>
+                </tr>
+            }
+            </tbody>
+        </table>
+    }
+}

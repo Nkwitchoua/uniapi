@@ -22,22 +22,22 @@ public class CourseService : ICourseService
         _logger = logger;
     }
 
-    public async Task<ReturnResult<List<CourseDto>>> GetAllAsync(CourseFilterDto filter)
+    public async Task<ReturnResult<List<TDto>>> GetAllAsync<TDto>(CourseFilterDto filter)
     {
         var courses = await _courseRepository.GetAllAsync(filter.Name, filter.TeacherId, filter.MinCredits, filter.MaxCredits);
-        return ReturnResult<List<CourseDto>>.Success(_mapper.Map<List<CourseDto>>(courses));
+        return ReturnResult<List<TDto>>.Success(_mapper.Map<List<TDto>>(courses));
     }
 
-    public async Task<ReturnResult<CourseDto>> GetByIdAsync(int id)
+    public async Task<ReturnResult<TDto>> GetByIdAsync<TDto>(int id)
     {
         var course = await _courseRepository.GetByIdAsync(id);
         if (course == null)
         {
             _logger.LogWarning("Course with id {CourseId} not found", id);
-            return ReturnResult<CourseDto>.Fail(StatusCodes.Status404NotFound, "COURSE_NOT_FOUND", "Course not found");
+            return ReturnResult<TDto>.Fail(StatusCodes.Status404NotFound, "COURSE_NOT_FOUND", "Course not found");
         }
 
-        return ReturnResult<CourseDto>.Success(_mapper.Map<CourseDto>(course));
+        return ReturnResult<TDto>.Success(_mapper.Map<TDto>(course));
     }
 
     public async Task<ReturnResult<CourseDto>> CreateAsync(CourseCreateDto dto)

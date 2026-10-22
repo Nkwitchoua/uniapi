@@ -1,12 +1,18 @@
+using Asp.Versioning;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using UniversityApi.Common;
 using UniversityApi.DTO.Courses;
+using UniversityApi.Security;
 using UniversityApi.Services.Interfaces;
 
-namespace UniversityApi.Controllers;
+namespace UniversityApi.Controllers.V1;
 
 [ApiController]
+[ApiVersion(1.0)]
+[Route("api/v{version:apiVersion}/courses")]
 [Route("api/courses")]
+[Authorize(Policy = Policies.AdminOnly)]
 public class CoursesController : BaseApiController
 {
     private readonly ICourseService _courseService;
@@ -16,16 +22,18 @@ public class CoursesController : BaseApiController
         _courseService = courseService;
     }
 
+    [AllowAnonymous]
     [HttpGet]
     public async Task<ActionResult<ReturnResult<List<CourseDto>>>> GetAll([FromQuery] CourseFilterDto filter)
     {
-        return ToResponse(await _courseService.GetAllAsync(filter));
+        return ToResponse(await _courseService.GetAllAsync<CourseDto>(filter));
     }
 
+    [AllowAnonymous]
     [HttpGet("{id:int}")]
     public async Task<ActionResult<ReturnResult<CourseDto>>> GetById(int id)
     {
-        return ToResponse(await _courseService.GetByIdAsync(id));
+        return ToResponse(await _courseService.GetByIdAsync<CourseDto>(id));
     }
 
     [HttpPost]

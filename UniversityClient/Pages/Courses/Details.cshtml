@@ -1,0 +1,35 @@
+@page "{id:int}"
+@model UniversityClient.Pages.Courses.DetailsModel
+@{
+    ViewData["Title"] = "Курс";
+}
+
+<a asp-page="/Index" asp-route-v="@Model.V">&larr; Ко всем курсам</a>
+
+@if (Model.Error != null)
+{
+    <div class="alert alert-danger mt-3">@Model.Error</div>
+}
+else if (Model.CourseV1 != null)
+{
+    var c = Model.CourseV1;
+    <h1 class="h3 mt-3">@c.Name <span class="badge bg-secondary">v1</span></h1>
+    <dl class="row">
+        <dt class="col-sm-3">Описание</dt><dd class="col-sm-9">@c.Description</dd>
+        <dt class="col-sm-3">Кредиты</dt><dd class="col-sm-9">@c.Credits</dd>
+        <dt class="col-sm-3">Преподаватель</dt><dd class="col-sm-9">@c.TeacherName (id @c.TeacherId)</dd>
+        <dt class="col-sm-3">Создан</dt><dd class="col-sm-9">@c.CreatedAt.ToLocalTime().ToString("dd.MM.yyyy")</dd>
+    </dl>
+}
+else if (Model.CourseV2 != null)
+{
+    var c = Model.CourseV2;
+    <h1 class="h3 mt-3">@c.Name <span class="badge bg-primary">v2</span></h1>
+    <dl class="row">
+        <dt class="col-sm-3">Описание</dt><dd class="col-sm-9">@c.Description</dd>
+        <dt class="col-sm-3">Кредиты</dt><dd class="col-sm-9">@c.Credits</dd>
+        <dt class="col-sm-3">Преподаватель</dt><dd class="col-sm-9">@c.Teacher.FullName, @c.Teacher.Department (@c.Teacher.Email)</dd>
+        <dt class="col-sm-3">Записано студентов</dt><dd class="col-sm-9">@c.EnrolledStudentsCount</dd>
+        <dt class="col-sm-3">Создан</dt><dd class="col-sm-9">@c.CreatedAt.ToLocalTime().ToString("dd.MM.yyyy")</dd>
+    </dl>
+}

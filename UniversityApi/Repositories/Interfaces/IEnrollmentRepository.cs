@@ -4,7 +4,7 @@ namespace UniversityApi.Repositories.Interfaces;
 
 public interface IEnrollmentRepository
 {
-    Task<List<Enrollment>> GetAllAsync();
+    Task<List<Enrollment>> GetAllAsync(int? studentId = null, int? teacherId = null);
     Task<Enrollment?> GetByIdAsync(int id);
     Task<bool> ExistsAsync(int studentId, int courseId);
     Task AddAsync(Enrollment enrollment);
